@@ -1,0 +1,29 @@
+name: "Terraform GCP Deployment"
+
+on:
+  push:
+    branches:
+      - feature/gcpBucketInActions
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: v1.10.4
+
+      - name: Authenticate to GCP
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        run: echo "$GOOGLE_CREDENTIALS" > gcp-credentials.json
+
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Apply Terraform Configuration
+        run: terraform apply -auto-approve
