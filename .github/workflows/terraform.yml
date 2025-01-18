@@ -17,13 +17,25 @@ jobs:
         with:
           terraform_version: v1.10.4
 
-      - name: Authenticate to GCP
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
-        run: echo "$GOOGLE_CREDENTIALS" > GCP_CREDENTIALS.json
+      # Write the GCP credentials stored in GitHub Secrets to a file
+      - name: Create Google Cloud Credentials File
+        run: |
+          echo '${{ secrets.GCP_CREDENTIALS }}' > "$HOME/gcp-credentials.json"
+          cat "$HOME/gcp-credentials.json"  # (Optional: Remove after verifying)
+
+      # Export the credentials for Terraform
+      - name: Set GOOGLE_APPLICATION_CREDENTIALS
+        run: echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcp-credentials.json" >> $GITHUB_ENV
+
+      # Verify that Terraform can read the credentials
+      - name: Debug Credentials
+        run: ls -lah $HOME/gcp-credentials.json
 
       - name: Initialize Terraform
         run: terraform init
+
+      - name: Plan Terraform Changes
+        run: terraform plan
 
       - name: Apply Terraform Configuration
         run: terraform apply -auto-approve
