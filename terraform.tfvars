@@ -1,3 +1,3 @@
 project_id   = "bucketcreationingcp"
-bucket_name  = "my-storage-bucket"
-environment  = "my-gcp-tech-bucket"
+bucket_name  = "my-gcp-tech-bucket"
+environment  = "DEV"
